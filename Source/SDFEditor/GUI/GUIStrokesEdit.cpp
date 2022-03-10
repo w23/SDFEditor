@@ -338,7 +338,6 @@ namespace GUI
         const ImVec2 kViewSize = ImGui::GetMainViewport()->Size;
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetRect(kViewPos.x, kViewPos.y, kViewSize.x, kViewSize.y);
-        
 
         // draw guizmos icons panel
         ImGuiWindowFlags lWindowFlags = 0;
@@ -461,6 +460,7 @@ namespace GUI
 #endif
     }
 
+    // TODO: document the origin of this function
     void CreateCameraRay(CScene const & aScene, glm::vec3& aRayOrigin, glm::vec3& aRayDirection)
     {
         const ImVec2 kViewPos = ImGui::GetMainViewport()->Pos;
@@ -495,7 +495,7 @@ namespace GUI
         glm::vec3 lRayOrigin = glm::vec3(1.0);
         glm::vec3 lRayDirection = glm::vec3(1.0);
         float lPrevDistance = 1000000.0f;
-        int32_t lIntersectedIndex = UINT32_MAX;
+        int32_t lIntersectedIndex = INT32_MAX;
 
         // calculate ray based on mouse position
         CreateCameraRay(aScene, lRayOrigin, lRayDirection);
@@ -521,7 +521,7 @@ namespace GUI
             }
         }
 
-        if (lIntersectedIndex != UINT32_MAX)
+        if (lIntersectedIndex != INT32_MAX)
         {
             //SBX_LOG("Clicked Stroke %s", aScene.mStrokesArray[lIntersectedIndex].mName);
             aScene.mSelectedItems.push_back(lIntersectedIndex);
