@@ -6,6 +6,8 @@ SDFEditor is a Constructive Solid Geometry editor with a non destructive workflo
 
 The project is coded in C++, uses OpenGL 4.5 to evaluate the primitives data in GPU, generate the SDF volume and render it. The interface is also rendered with OpenGL using Dear Imgui.
 
+**Repository:** https://github.com/galloscript/SDFEditor
+
 ### SDFEditor Features
 
 - Create Box / Ellipsoid / Torus / Capsule primitives 
@@ -47,8 +49,9 @@ Compatibility with Linux and MacOSX will be added in the future.
 
 ## SDFEditor Examples
 
-### Sculpting a face video video
+### Sculpting a face video
 Example video time-lapse creating a basic face with a few primitives.
+
 [![Sculpting a face time-lapse](https://img.youtube.com/vi/LGpUlqWzjd8/0.jpg)](https://www.youtube.com/watch?v=LGpUlqWzjd8)
 
 ### Shading
