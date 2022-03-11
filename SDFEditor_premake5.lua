@@ -97,7 +97,7 @@ project "SDFEditor"
         "./Source/SDFEditor/**.def",
         "./Source/SDFEditor/**.inl",
         "./Source/SDFEditor/**.natvis",
-        "./Data/Shaders/*.glsl"
+        "./Data/Shaders/**.glsl",
     }
 
     vpaths { 
@@ -108,6 +108,23 @@ project "SDFEditor"
     --excludes { "./Source/ThirdParty/imgui/misc/**.*" }
     --excludes { "./Source/ThirdParty/glm/**.cpp" }
 
+    filter { "system:windows" }
+        buildaction "ResourceCompile"
+        files {
+            "./Build/SDFEditor.rc"
+        }
+
+    filter { "system:windows" }
+        files {
+            "./Build/resource.h"
+        }
+
+    filter { "system:windows" }
+        buildaction "Image"
+        files {
+            "./Build/icon_1EB_icon.ico"
+        }
+    
     --OpenGL system libraries
     filter { "system:windows" }
         links { "OpenGL32" }
