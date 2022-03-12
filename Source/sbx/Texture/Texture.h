@@ -15,19 +15,19 @@ namespace sbx
     namespace ETextureFormat
     {
         enum Type
-	    {
-		    R8,
-		    RGBA8,
+        {
+            R8,
+            RGBA8,
             R32F,
-		    RGBA32F
-	    };
+            RGBA32F
+        };
     } // EImageFormat
 
     enum class EGammaSpace
     {
-	    Linear,
-	    Pow22, //simplified sRGB conversion
-	    sRGB,
+        Linear,
+        Pow22, //simplified sRGB conversion
+        sRGB,
     };
 
     struct TTexture 
@@ -62,7 +62,7 @@ namespace sbx
         uint8_t*    AsR8Buffer      () const { return mBuffer.GetByteArray(); };
         TColor8U*   AsRGBA8Buffer   () const { return (TColor8U*)mBuffer.GetByteArray(); };
         float*      AsR32FBuffer    () const { return (float*)mBuffer.GetByteArray(); };
-		TColor32F*  AsRGBA32FBuffer () const { return (TColor32F*)mBuffer.GetByteArray(); };
+        TColor32F*  AsRGBA32FBuffer () const { return (TColor32F*)mBuffer.GetByteArray(); };
     };
 
     struct TTextureView
