@@ -7,6 +7,8 @@ layout(location = 2) in vec4 inFar;
 
 layout(location = 0) out vec4 outColor;
 
+layout(location = 2) uniform sampler2D uRoughnessMap;
+
 layout(std140, binding = 3) uniform global_material
 {
     vec4 surfaceColor;
@@ -161,6 +163,23 @@ vec3 ApplyLight(in vec3 pos, in vec3 rd, in vec3 n, in vec3 alb, vec3 lgt, vec3 
     return col;
 }
 
+// "p" point apply texture to
+// "n" normal at "p"
+// "k" controls the sharpness of the blending in the
+//     transitions areas.
+// "s" texture sampler
+vec4 BoxMap(in sampler2D s, in vec3 p, in vec3 n, in float k)
+{
+    // project+fetch
+    vec4 x = texture(s, p.yz);
+    vec4 y = texture(s, p.zx);
+    vec4 z = texture(s, p.xy);
+
+    // and blend
+    vec3 m = pow(abs(n), vec3(k));
+    return (x * m.x + y * m.y + z * m.z) / (m.x + m.y + m.z);
+}
+
 vec3 ApplyMaterial(vec3 pos, vec3 rayDir, vec3 normal, float ao)
 {
     vec3 lightDir = normalize(vec3(1.0, 1.0, 0.0));
@@ -184,9 +203,13 @@ vec3 ApplyMaterial(vec3 pos, vec3 rayDir, vec3 normal, float ao)
     //color = mix(surfaceColor.rgb, fresnelColor.rgb, dotCam);
    // color = mix(aoColor.rgb, color, ao) * dotSN;
     
-    
-    color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir, lightAColor.rgb, pbr.x, pbr.y);
-    color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir2, lightBColor.rgb, pbr.x, pbr.y);
+    // Added roughness map
+    float roughMap = BoxMap(uRoughnessMap, pos * 1.0, normal, 8.0).r;
+    //roughMap = mix(0.5, 1.0, roughMap);
+    float roughness = mix(0.0, roughMap, clamp(pbr.x, 0.0, 1.0));
+
+    color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir, lightAColor.rgb, roughness, pbr.y);
+    color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir2, lightBColor.rgb, roughness, pbr.y);
     color = mix(color, fresnelColor.rgb, dotCam);
     color = mix(aoColor.rgb, color, ao);
     //color += fresnelColor.rgb * (1.0 - ao) * 0.5;
