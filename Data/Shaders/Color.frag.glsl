@@ -127,7 +127,7 @@ vec3 ApplyLight(in vec3 pos, in vec3 rd, in vec3 n, in vec3 alb, vec3 lgt, vec3 
 {
     //const float rough = 0.3;
     float nl = dot(n, lgt);
-    nl = (nl + 0.3) / 1.3; // cover more area
+    nl = (nl + 0.7) / 1.7; // cover more area
     nl = clamp(nl, 0.01, 1.0);
     float nv = dot(n, -rd);
     vec3 col = vec3(0.);
@@ -180,10 +180,11 @@ vec4 BoxMap(in sampler2D s, in vec3 p, in vec3 n, in float k)
     return (x * m.x + y * m.y + z * m.z) / (m.x + m.y + m.z);
 }
 
+vec3 lightDir = normalize(vec3(1.0, 1.0, 0.0));
+vec3 lightDir2 = normalize(vec3(-1.0, -1.0, 0.0));
+
 vec3 ApplyMaterial(vec3 pos, vec3 rayDir, vec3 normal, float ao)
 {
-    vec3 lightDir = normalize(vec3(1.0, 1.0, 0.0));
-    vec3 lightDir2 = normalize(vec3(-1.0, -1.0, 0.0));
 
     //float dotSN = dot(normal, lightDir);
     //dotSN = (dotSN + 1.0) * 0.5;
@@ -236,7 +237,7 @@ vec3 RaymarchStrokes(in ray_t camRay)
 
     if (finalDist <= limit)
     {
-        vec3 normal = estimateNormalAtlas(camRay.pos);
+        vec3 normal = estimateNormal(camRay.pos);
         color = ApplyMaterial(camRay.pos, camRay.dir, normal, CalcAO(camRay.pos, normal));
     }
 
@@ -255,6 +256,11 @@ vec3 RaymarchAtlas(in ray_t camRay)
     float limit = uVoxelSide.x * 1.0;
     float limitSubVoxel = 0.02;
     vec3 color = backgroundColor.rgb;
+
+    // See lights as background
+    //color = ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir, lightAColor.rgb, 1.0, 1.0);
+    //color += ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir2, lightBColor.rgb, 1.0, 1.0);
+    
 
     vec3 testNormal = vec3(0, 0, 0);
     vec2 testDistance = vec2(0, 0);

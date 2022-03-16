@@ -61,6 +61,8 @@ namespace EBlockBinding
 
 void CRenderer::Init()
 {
+    glDisable(GL_FRAMEBUFFER_SRGB);
+
     glGenVertexArrays(1, &mDummyVAO);
    
     int workGroupSizes[3] = { 0 };
