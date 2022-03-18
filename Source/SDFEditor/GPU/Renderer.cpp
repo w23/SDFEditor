@@ -8,6 +8,7 @@
 #include "SDFEditor/Tool/Scene.h"
 
 #include <sbx/Core/Log.h>
+#include <sbx/Texture/TextureUtils.h>
 
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
@@ -19,6 +20,8 @@ namespace EUniformLoc
     {
         uViewMatrix = 0,
         uProjectionMatrix = 1,
+        uRoughnessMap = 2,
+
         uStrokesNum = 20,
         uMaxSlotsCount = 21,
         uVoxelSide = 22,
@@ -37,7 +40,8 @@ namespace ETexBinding
     enum Type
     {
         uSdfLut = 1,
-        uSdfAtlas = 2
+        uSdfAtlas = 2,
+        uRoughnessMap = 3,
     };
 }
 
@@ -57,6 +61,8 @@ namespace EBlockBinding
 
 void CRenderer::Init()
 {
+    glDisable(GL_FRAMEBUFFER_SRGB);
+
     glGenVertexArrays(1, &mDummyVAO);
    
     int workGroupSizes[3] = { 0 };
@@ -124,11 +130,46 @@ void CRenderer::Init()
     mMaterialBuffer = std::make_shared<CGPUBufferObject>(EGPUBufferBindTarget::UNIFORM_BUFFER);
     mMaterialBuffer->SetData(sizeof(TGlobalMaterialBufferData), nullptr, EGPUBufferFlags::DYNAMIC_STORAGE);
     mMaterialBuffer->BindUniformBuffer(EBlockBinding::global_material);
+
+
+    // Default 8x8 white roughness texture in case nothing is specified in shading settings.
+    /*uint8_t* lTempTex8x8 = (uint8_t*)::malloc(8*8);
+    for (int i = 0; i < 8 * 8; ++i)
+    {
+        lTempTex8x8[i] = 0xFF;
+    }
+    SetRoughnessMap(8, 8, lTempTex8x8);
+    ::free(lTempTex8x8);
+    */
+    
+    // TODO: make this selectable in shading settings
+    sbx::TTexture lRoughMap;
+    sbx::texutil::LoadFromFile("./Textures/roughness.png", lRoughMap, true);
+    SetRoughnessMap(lRoughMap.mWidth, lRoughMap.mHeight, lRoughMap.AsR8Buffer());
+    
+
 }
 
 void CRenderer::Shutdown()
 {
     glDeleteVertexArrays(1, &mDummyVAO);
+}
+
+void CRenderer::SetRoughnessMap(uint32_t aWidth, uint32_t aHeight, void* aData)
+{
+    TGPUTextureConfig lRoughnessTexConfig;
+    lRoughnessTexConfig.mTarget = ETexTarget::TEXTURE_2D;
+    lRoughnessTexConfig.mExtentX = aWidth;
+    lRoughnessTexConfig.mExtentY = aHeight;
+    lRoughnessTexConfig.mSlices = 1;
+    lRoughnessTexConfig.mFormat = ETexFormat::R8;
+    lRoughnessTexConfig.mMinFilter = ETexFilter::LINEAR;
+    lRoughnessTexConfig.mMagFilter = ETexFilter::LINEAR;
+    lRoughnessTexConfig.mWrapS = ETexWrap::REPEAT;
+    lRoughnessTexConfig.mWrapT = ETexWrap::REPEAT;
+    lRoughnessTexConfig.mMips = 1 + uint32_t(glm::floor(glm::log2(glm::max(float(aWidth), float(aHeight)))));
+    mRoughnessMap = std::make_shared<CGPUTexture>(lRoughnessTexConfig);
+    mRoughnessMap->UpdateData(aData);
 }
 
 void CRenderer::ReloadShaders()
@@ -160,6 +201,8 @@ void CRenderer::ReloadShaders()
         mColorFragmentProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lSdfCommonCode, lColorFSCode }, EShaderSourceType::FRAGMENT_SHADER, "BaseFragmentFS");
         std::vector<CGPUShaderProgramRef> lPrograms = { mFullscreenVertexProgram, mColorFragmentProgram };
         mScreenQuadPipeline = std::make_shared<CGPUShaderPipeline>(lPrograms);
+
+        glProgramUniform1i(mColorFragmentProgram->GetHandler(), EUniformLoc::uRoughnessMap, ETexBinding::uRoughnessMap);
     }
 
 
@@ -273,6 +316,7 @@ void CRenderer::RenderFrame()
     mScreenQuadPipeline->Bind();
     mSdfLut->BindTexture(ETexBinding::uSdfLut);
     mSdfAtlas->BindTexture(ETexBinding::uSdfAtlas);
+    mRoughnessMap->BindTexture(ETexBinding::uRoughnessMap);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
     

@@ -166,6 +166,11 @@ bool CToolApp::HandleShortcuts()
 {
     ImGuiIO& io = ImGui::GetIO();
 
+    if (io.WantCaptureKeyboard)
+    {
+        return false;
+    }
+
     // F5 Reload Shaders
     if (ImGui::IsKeyPressed(294, false))
     {

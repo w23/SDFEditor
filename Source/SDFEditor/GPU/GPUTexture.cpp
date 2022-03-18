@@ -19,6 +19,24 @@ GLenum sTexFormat[] =
     GL_RGBA32F,
 };
 
+GLenum sTexFormatSimple[] =
+{
+    GL_RED,
+    GL_RGBA,
+    GL_RGBA,
+    GL_RGBA,
+    GL_RGBA,
+};
+
+GLenum sTexFormatDataType[] =
+{
+    GL_UNSIGNED_BYTE,
+    GL_UNSIGNED_BYTE,
+    GL_UNSIGNED_BYTE,
+    GL_SHORT,
+    GL_FLOAT,
+};
+
 GLenum sTexFilter[] =
 {
     GL_NEAREST,
@@ -94,6 +112,28 @@ void CGPUTexture::SetFilters(ETexFilter::Type aMinFilters, ETexFilter::Type aMag
     {
         mConfig.mMagFilter = aMagFilter;
         glTextureParameteri(mTextureHandler, GL_TEXTURE_MAG_FILTER, sTexFilter[mConfig.mMagFilter]);
+    }
+}
+
+void CGPUTexture::UpdateData(const void* aData)
+{
+    if (mTarget == GL_TEXTURE_3D)
+    {
+        glTextureSubImage3D(mTextureHandler, 0, 0, 0, 0, mConfig.mExtentX, mConfig.mExtentY, mConfig.mSlices,
+            sTexFormatSimple[mConfig.mFormat], sTexFormatDataType[mConfig.mFormat],
+            aData);
+            
+    }
+    else if (mTarget == GL_TEXTURE_2D)
+    {
+        glTextureSubImage2D(mTextureHandler, 0, 0, 0, mConfig.mExtentX, mConfig.mExtentY,
+            sTexFormatSimple[mConfig.mFormat], sTexFormatDataType[mConfig.mFormat],
+            aData);
+    }
+
+    if (mConfig.mMips > 1)
+    {
+        glGenerateTextureMipmap(mTextureHandler);
     }
 }
 

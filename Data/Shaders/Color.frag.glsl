@@ -7,6 +7,8 @@ layout(location = 2) in vec4 inFar;
 
 layout(location = 0) out vec4 outColor;
 
+layout(location = 2) uniform sampler2D uRoughnessMap;
+
 layout(std140, binding = 3) uniform global_material
 {
     vec4 surfaceColor;
@@ -125,7 +127,7 @@ vec3 ApplyLight(in vec3 pos, in vec3 rd, in vec3 n, in vec3 alb, vec3 lgt, vec3 
 {
     //const float rough = 0.3;
     float nl = dot(n, lgt);
-    nl = (nl + 0.3) / 1.3; // cover more area
+    nl = (nl + 0.7) / 1.7; // cover more area
     nl = clamp(nl, 0.01, 1.0);
     float nv = dot(n, -rd);
     vec3 col = vec3(0.);
@@ -161,10 +163,28 @@ vec3 ApplyLight(in vec3 pos, in vec3 rd, in vec3 n, in vec3 alb, vec3 lgt, vec3 
     return col;
 }
 
+// "p" point apply texture to
+// "n" normal at "p"
+// "k" controls the sharpness of the blending in the
+//     transitions areas.
+// "s" texture sampler
+vec4 BoxMap(in sampler2D s, in vec3 p, in vec3 n, in float k)
+{
+    // project+fetch
+    vec4 x = texture(s, p.yz);
+    vec4 y = texture(s, p.zx);
+    vec4 z = texture(s, p.xy);
+
+    // and blend
+    vec3 m = pow(abs(n), vec3(k));
+    return (x * m.x + y * m.y + z * m.z) / (m.x + m.y + m.z);
+}
+
+vec3 lightDir = normalize(vec3(1.0, 1.0, 0.0));
+vec3 lightDir2 = normalize(vec3(-1.0, -1.0, 0.0));
+
 vec3 ApplyMaterial(vec3 pos, vec3 rayDir, vec3 normal, float ao)
 {
-    vec3 lightDir = normalize(vec3(1.0, 1.0, 0.0));
-    vec3 lightDir2 = normalize(vec3(-1.0, -1.0, 0.0));
 
     //float dotSN = dot(normal, lightDir);
     //dotSN = (dotSN + 1.0) * 0.5;
@@ -184,9 +204,13 @@ vec3 ApplyMaterial(vec3 pos, vec3 rayDir, vec3 normal, float ao)
     //color = mix(surfaceColor.rgb, fresnelColor.rgb, dotCam);
    // color = mix(aoColor.rgb, color, ao) * dotSN;
     
-    
-    color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir, lightAColor.rgb, pbr.x, pbr.y);
-    color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir2, lightBColor.rgb, pbr.x, pbr.y);
+    // Added roughness map
+    float roughMap = BoxMap(uRoughnessMap, pos * 1.0, normal, 8.0).r;
+    //roughMap = mix(0.5, 1.0, roughMap);
+    float roughness = mix(0.0, roughMap, clamp(pbr.x, 0.0, 1.0));
+
+    color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir, lightAColor.rgb, roughness, pbr.y);
+    color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir2, lightBColor.rgb, roughness, pbr.y);
     color = mix(color, fresnelColor.rgb, dotCam);
     color = mix(aoColor.rgb, color, ao);
     //color += fresnelColor.rgb * (1.0 - ao) * 0.5;
@@ -213,7 +237,7 @@ vec3 RaymarchStrokes(in ray_t camRay)
 
     if (finalDist <= limit)
     {
-        vec3 normal = estimateNormalAtlas(camRay.pos);
+        vec3 normal = estimateNormal(camRay.pos);
         color = ApplyMaterial(camRay.pos, camRay.dir, normal, CalcAO(camRay.pos, normal));
     }
 
@@ -232,6 +256,11 @@ vec3 RaymarchAtlas(in ray_t camRay)
     float limit = uVoxelSide.x * 1.0;
     float limitSubVoxel = 0.02;
     vec3 color = backgroundColor.rgb;
+
+    // See lights as background
+    //color = ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir, lightAColor.rgb, 1.0, 1.0);
+    //color += ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir2, lightBColor.rgb, 1.0, 1.0);
+    
 
     vec3 testNormal = vec3(0, 0, 0);
     vec2 testDistance = vec2(0, 0);

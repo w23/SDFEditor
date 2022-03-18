@@ -14,6 +14,7 @@ class CRenderer
 public:
     void Init();
     void Shutdown();
+    void SetRoughnessMap(uint32_t aWidth, uint32_t aHeight, void* aData);
     void ReloadShaders();
     void UpdateSceneData(class CScene const& aScene);
     void RenderFrame();
@@ -43,4 +44,6 @@ private:
     CGPUBufferObjectRef mSlotCounterBuffer;
 
     CGPUBufferObjectRef mMaterialBuffer;
+
+    CGPUTextureRef mRoughnessMap;
 };

@@ -68,6 +68,8 @@ int main(int, char**)
     //glfwWindowHint(GLFW_GREEN_BITS, 16);
     //glfwWindowHint(GLFW_BLUE_BITS, 16);
 
+    glfwWindowHint(GLFW_SRGB_CAPABLE, false);
+
     // Create window with graphics context
     GLFWwindow* window = glfwCreateWindow(1920, 1080, "SDFEditor", NULL, NULL);
     if (window == NULL)
@@ -157,6 +159,8 @@ int main(int, char**)
             gToolApp->WantClose();
         }
     });
+
+    
 
     // Main loop
     while (gToolApp->IsRunning()) //!glfwWindowShouldClose(window)

@@ -83,6 +83,7 @@ public:
     void BindTexture(uint32_t aUnit);
     void BindImage(uint32_t aBinding, uint32_t aMip, EImgAccess::Type aAccess);
     void SetFilters(ETexFilter::Type aMinFilters, ETexFilter::Type aMagFilter);
+    void UpdateData(const void* aData);
 private:
     TGPUTextureConfig mConfig;
 
