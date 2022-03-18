@@ -24,7 +24,7 @@ The project is coded in C++, uses OpenGL 4.5 to evaluate the primitives data in 
 
 SDFEditor has a permissive license that let you use and redistribute SDFEditor in binary or source code if you follow a list of conditions. One of them is an Anti-NFT clausule that explicitly prohibits the usage of this software to produce any kind of content that would be used as NFT or for any other crypto-currency trading. Read the [LICENSE.txt](/LICENSE.txt) file for more information.
 
-## Download Release Binary
+## Download Compiled Releases
 
 You can download Windows 64 bit binary package from Releases page.
 
