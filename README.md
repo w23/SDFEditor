@@ -24,6 +24,12 @@ The project is coded in C++, uses OpenGL 4.5 to evaluate the primitives data in 
 
 SDFEditor has a permissive license that let you use and redistribute SDFEditor in binary or source code if you follow a list of conditions. One of them is an Anti-NFT clausule that explicitly prohibits the usage of this software to produce any kind of content that would be used as NFT or for any other crypto-currency trading. Read the [LICENSE.txt](/LICENSE.txt) file for more information.
 
+## Download Release Binary
+
+You can download Windows 64 bit binary package from Releases page.
+
+Releases: https://github.com/galloscript/SDFEditor/releases
+
 ## Building
 
 To create the Visual Studio Solution files execute GenerateSolution.bat, this will run the premake tool included in the repo. This project has only been tested in Visual Studio 2019 on a Windows 10 system with an Nvidia GTX 1080Ti card, it is expected to work out of the box with AMD cards too, but report any issue you find please.
