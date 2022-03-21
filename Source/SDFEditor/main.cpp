@@ -1,6 +1,6 @@
 // Copyright (c) 2022 David Gallardo and SDFEditor Project
 
-// main filed based on imgui standalone example application for GLFW + OpenGL 3
+// main file based on imgui standalone example application for GLFW + OpenGL 3
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 
 #include "ThirdParty/glad/glad.h"
