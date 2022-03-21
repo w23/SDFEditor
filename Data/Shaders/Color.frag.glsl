@@ -163,6 +163,7 @@ vec3 ApplyLight(in vec3 pos, in vec3 rd, in vec3 n, in vec3 alb, vec3 lgt, vec3 
     return col;
 }
 
+// BoxMap from https://www.shadertoy.com/view/MtsGWH
 // "p" point apply texture to
 // "n" normal at "p"
 // "k" controls the sharpness of the blending in the
@@ -206,7 +207,7 @@ vec3 ApplyMaterial(vec3 pos, vec3 rayDir, vec3 normal, float ao)
     
     // Added roughness map
     float roughMap = BoxMap(uRoughnessMap, pos * 1.0, normal, 8.0).r;
-    //roughMap = mix(0.5, 1.0, roughMap);
+    //roughMap = mix(0.2, 1.0, roughMap);
     float roughness = mix(0.0, roughMap, clamp(pbr.x, 0.0, 1.0));
 
     color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir, lightAColor.rgb, roughness, pbr.y);
