@@ -21,6 +21,7 @@ namespace EUniformLoc
         uViewMatrix = 0,
         uProjectionMatrix = 1,
         uRoughnessMap = 2,
+        uDitheringMap = 3,
 
         uStrokesNum = 20,
         uMaxSlotsCount = 21,
@@ -42,6 +43,7 @@ namespace ETexBinding
         uSdfLut = 1,
         uSdfAtlas = 2,
         uRoughnessMap = 3,
+        uDitheringMap = 4,
     };
 }
 
@@ -148,6 +150,34 @@ void CRenderer::Init()
     SetRoughnessMap(lRoughMap.mWidth, lRoughMap.mHeight, lRoughMap.AsR8Buffer());
     
 
+    // Bayer dithering
+	// https://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/
+    {
+        static const char lBayerDitheringPattern[] = {
+        0, 32,  8, 40,  2, 34, 10, 42,   /* 8x8 Bayer ordered dithering  */
+        48, 16, 56, 24, 50, 18, 58, 26,  /* pattern.  Each input pixel   */
+        12, 44,  4, 36, 14, 46,  6, 38,  /* is scaled to the 0..63 range */
+        60, 28, 52, 20, 62, 30, 54, 22,  /* before looking in this table */
+        3, 35, 11, 43,  1, 33,  9, 41,   /* to determine the action.     */
+        51, 19, 59, 27, 49, 17, 57, 25,
+        15, 47,  7, 39, 13, 45,  5, 37,
+        63, 31, 55, 23, 61, 29, 53, 21 };
+        
+        TGPUTextureConfig lBayerDitheringTexConfig;
+        lBayerDitheringTexConfig.mTarget = ETexTarget::TEXTURE_2D;
+        lBayerDitheringTexConfig.mExtentX = 8;
+        lBayerDitheringTexConfig.mExtentY = 8;
+        lBayerDitheringTexConfig.mSlices = 1;
+        lBayerDitheringTexConfig.mFormat = ETexFormat::R8;
+        lBayerDitheringTexConfig.mMinFilter = ETexFilter::LINEAR;
+        lBayerDitheringTexConfig.mMagFilter = ETexFilter::LINEAR;
+        lBayerDitheringTexConfig.mWrapS = ETexWrap::REPEAT;
+        lBayerDitheringTexConfig.mWrapT = ETexWrap::REPEAT;
+        lBayerDitheringTexConfig.mMips = 1 + uint32_t(glm::floor(glm::log2(glm::max(float(8), float(8)))));
+        mDitheringMap = std::make_shared<CGPUTexture>(lBayerDitheringTexConfig);
+        mDitheringMap->UpdateData(lBayerDitheringPattern);
+
+    }
 }
 
 void CRenderer::Shutdown()
@@ -203,6 +233,7 @@ void CRenderer::ReloadShaders()
         mScreenQuadPipeline = std::make_shared<CGPUShaderPipeline>(lPrograms);
 
         glProgramUniform1i(mColorFragmentProgram->GetHandler(), EUniformLoc::uRoughnessMap, ETexBinding::uRoughnessMap);
+        glProgramUniform1i(mColorFragmentProgram->GetHandler(), EUniformLoc::uDitheringMap, ETexBinding::uDitheringMap);
     }
 
 
@@ -317,6 +348,7 @@ void CRenderer::RenderFrame()
     mSdfLut->BindTexture(ETexBinding::uSdfLut);
     mSdfAtlas->BindTexture(ETexBinding::uSdfAtlas);
     mRoughnessMap->BindTexture(ETexBinding::uRoughnessMap);
+    mDitheringMap->BindTexture(ETexBinding::uDitheringMap);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
     

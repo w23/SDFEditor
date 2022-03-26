@@ -46,4 +46,5 @@ private:
     CGPUBufferObjectRef mMaterialBuffer;
 
     CGPUTextureRef mRoughnessMap;
+    CGPUTextureRef mDitheringMap;
 };

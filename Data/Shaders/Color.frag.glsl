@@ -8,6 +8,7 @@ layout(location = 2) in vec4 inFar;
 layout(location = 0) out vec4 outColor;
 
 layout(location = 2) uniform sampler2D uRoughnessMap;
+layout(location = 3) uniform sampler2D uDitheringMap;
 
 layout(std140, binding = 3) uniform global_material
 {
@@ -259,8 +260,8 @@ vec3 RaymarchAtlas(in ray_t camRay)
     vec3 color = backgroundColor.rgb;
 
     // See lights as background
-    //color = ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir, lightAColor.rgb, 1.0, 1.0);
-    //color += ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir2, lightBColor.rgb, 1.0, 1.0);
+    color = ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir, lightAColor.rgb, 1.0, 1.0);
+    color += ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir2, lightBColor.rgb, 1.0, 1.0);
     
 
     vec3 testNormal = vec3(0, 0, 0);
@@ -421,6 +422,10 @@ void main()
         vig = smoothstep(0.0, 0.75, vig);
         finalColor *= vig;
     }
+
+
+    // Fix color banding with dithering: https://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/
+    finalColor += texture2D(uDitheringMap, gl_FragCoord.xy / 8.0).r / 32.0 - (1.0 / 128.0);
 
     outColor = vec4(finalColor, 1.0f);
 
