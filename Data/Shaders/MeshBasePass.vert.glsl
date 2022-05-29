@@ -32,11 +32,7 @@ layout(location = 2) out vec4 outFar;
 //layout(location = 1) uniform mat4 uProjectionMatrix;
 layout(location = 2) uniform mat4 uModelMatrix; //TODO: should come from a buffer
 
-layout(std140, binding = 3) uniform view
-{
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
+
 
 void main()
 {
@@ -47,11 +43,11 @@ void main()
     //gl_Position = vec4(clipPos, 0.0, 1.0);
     //outFragUV = uvs[gl_VertexID].xy;
     //
-    mat4 viewProj = projectionMatrix * viewMatrix;
+    mat4 viewProj = view_projectionMatrix * view_viewMatrix;
     mat4 invViewProj = inverse(viewProj);
     //
  
-    gl_Position = projectionMatrix * viewMatrix * vec4(inPosition * 3.2, 1.0);
+    gl_Position = viewProj * vec4(inPosition * 3.2, 1.0);
 
     outNear = invViewProj * vec4(gl_Position.xy, 0, 1);
     ////nearPos /= nearPos.w;

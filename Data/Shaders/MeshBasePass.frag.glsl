@@ -6,13 +6,13 @@ layout(location = 2) in vec4 inFar;
 
 layout(location = 0) out vec4 outColor;
 
-layout(location = 0) uniform mat4 uViewMatrix;
-layout(location = 1) uniform mat4 uProjectionMatrix;
-layout(location = 2) uniform mat4 uModelMatrix;
+//layout(location = 0) uniform mat4 uViewMatrix;
+//layout(location = 1) uniform mat4 uProjectionMatrix;
+//layout(location = 2) uniform mat4 uModelMatrix;
 layout(location = 10) uniform sampler2D uRoughnessMap;
 layout(location = 11) uniform sampler2D uDitheringMap;
 
-layout(std140, binding = 3) uniform global_material
+layout(std140, binding = 4) uniform global_material
 {
     vec4 surfaceColor;
     vec4 fresnelColor;
@@ -217,7 +217,7 @@ vec4 ApplyMaterial(vec3 pos, vec3 rayDir, vec3 normal, float ao)
     color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir2, lightBColor.rgb, roughness, pbr.y);
     color = mix(color, fresnelColor.rgb, dotCam);
     color = mix(aoColor.rgb, color, ao);
-    //color += fresnelColor.rgb * (1.0 - ao) * 0.5;
+    color += fresnelColor.rgb * (1.0 - ao) * 0.5;
 
     return vec4(color, 1.0);
 }
@@ -406,8 +406,16 @@ vec4 RaymarchAtlas(in ray_t camRay)
 
 void main()
 {    
-    vec3 origin = inNear.xyz / inNear.w;  //ray's origin
-    vec3 far3 = inFar.xyz / inFar.w;
+    vec2 clipPos = (gl_FragCoord.xy / view_resolution.xy) * 2.0 - 1.0;
+
+    mat4 viewProj = view_projectionMatrix * view_viewMatrix;
+    mat4 invViewProj = inverse(viewProj);
+
+    vec4 near = invViewProj * vec4(clipPos.xy, 0, 1);
+    vec4 far = invViewProj * vec4(clipPos.xy, 1, 1);
+
+    vec3 origin = near.xyz / near.w;  //ray's origin
+    vec3 far3 = far.xyz / far.w;
     vec3 dir = far3 - origin;
     dir = normalize(dir);        //ray's direction
 
@@ -415,14 +423,19 @@ void main()
     camRay.pos = origin;
     camRay.dir = dir;
     
-    //vec4 finalColor = (uVoxelPreview.x == 1) ? RaymarchAtlas(camRay) : RaymarchStrokes(camRay);
+    vec4 finalColor = (uVoxelPreview.x == 1) ? RaymarchAtlas(camRay) : RaymarchStrokes(camRay);
+    //finalColor.rgb = vec3(0.0, 1.0, 0.0) * finalColor.a;
 
-    vec4 finalColor = vec4(dir * 0.5 + 0.5, 0.2);
+    //vec4 finalColor = vec4(dir * 0.5 + 0.5, 0.2);
 
-    //finalColor = LinearToSRGB(finalColor.rgb);
+    finalColor.rgb = LinearToSRGB(finalColor.rgb);
+
+    finalColor.rgba += vec4(0.0, 0.1, 0.0, 0.1) * (1.0 - finalColor.a);
+
+   
     
     // Fix color banding with dithering: https://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/
-    //finalColor += texture2D(uDitheringMap, gl_FragCoord.xy / 8.0).r / 32.0 - (1.0 / 128.0);
+    finalColor += texture2D(uDitheringMap, gl_FragCoord.xy / 8.0).r / 32.0 - (1.0 / 128.0);
 
    outColor = finalColor;
    //outColor = vec4(vec3(1.0, 0.0, 0.0), 1.0f);

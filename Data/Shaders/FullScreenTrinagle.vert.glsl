@@ -33,12 +33,6 @@ layout(location = 0) out vec2 outFragUV;
 layout(location = 1) out vec4 outNear;
 layout(location = 2) out vec4 outFar;
 
-layout(std140, binding = 3) uniform view
-{
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
-
 void main()
 {
     vec2 clipPos = positions[gl_VertexID].xy;
@@ -48,7 +42,7 @@ void main()
     gl_Position = vec4(clipPos, 0.0, 1.0);
     outFragUV = uvs[gl_VertexID].xy;
 
-    mat4 viewProj = projectionMatrix * viewMatrix;
+    mat4 viewProj = view_projectionMatrix * view_viewMatrix;
     mat4 invViewProj = inverse(viewProj);    
 
     outNear = invViewProj * vec4(clipPos, 0, 1);

@@ -66,7 +66,7 @@ void CRenderer::Init()
     //glDisable(GL_FRAMEBUFFER_SRGB);
 
     // OpenGL setup
-    glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
@@ -256,9 +256,10 @@ void CRenderer::ReloadShaders()
 {
     SBX_LOG("Loading shaders...");
 
-    // Shared SDF code
+    // Shared shader code
     CShaderCodeRef lSdfCommonCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/SdfCommon.h.glsl")));
-    
+    CShaderCodeRef lViewCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/View.h.glsl")));
+
     // Compute lut shader program
     {
         CShaderCodeRef lComputeLutCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/ComputeSdfLut.comp.glsl")));
@@ -277,8 +278,8 @@ void CRenderer::ReloadShaders()
     {
         CShaderCodeRef lScreenQuadVSCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/FullScreenTrinagle.vert.glsl")));
         CShaderCodeRef lColorFSCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/Color.frag.glsl")));
-        mFullscreenVertexProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lScreenQuadVSCode }, EShaderSourceType::VERTEX_SHADER, "ScreenQuadVS");
-        mColorFragmentProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lSdfCommonCode, lColorFSCode }, EShaderSourceType::FRAGMENT_SHADER, "BaseFragmentFS");
+        mFullscreenVertexProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lViewCode, lScreenQuadVSCode }, EShaderSourceType::VERTEX_SHADER, "ScreenQuadVS");
+        mColorFragmentProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lSdfCommonCode, lViewCode, lColorFSCode }, EShaderSourceType::FRAGMENT_SHADER, "BaseFragmentFS");
         std::vector<CGPUShaderProgramRef> lPrograms = { mFullscreenVertexProgram, mColorFragmentProgram };
         mScreenQuadPipeline = std::make_shared<CGPUShaderPipeline>(lPrograms);
 
@@ -290,8 +291,8 @@ void CRenderer::ReloadShaders()
     {
         CShaderCodeRef lMeshVertexCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/MeshBasePass.vert.glsl")));
         CShaderCodeRef lMeshFragmentCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/MeshBasePass.frag.glsl")));
-        mMeshVertexProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lMeshVertexCode }, EShaderSourceType::VERTEX_SHADER, "MeshBasePassVS");
-        mMeshFragmentProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lSdfCommonCode, lMeshFragmentCode }, EShaderSourceType::FRAGMENT_SHADER, "MeshBasePassFS");
+        mMeshVertexProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lViewCode, lMeshVertexCode }, EShaderSourceType::VERTEX_SHADER, "MeshBasePassVS");
+        mMeshFragmentProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lSdfCommonCode, lViewCode, lMeshFragmentCode }, EShaderSourceType::FRAGMENT_SHADER, "MeshBasePassFS");
         std::vector<CGPUShaderProgramRef> lPrograms = { mMeshVertexProgram, mMeshFragmentProgram };
         mDrawMeshPipeline = std::make_shared<CGPUShaderPipeline>(lPrograms);
 
@@ -345,7 +346,8 @@ void CRenderer::UpdateSceneData(CScene const& aScene)
         {
             mComputeLutProgram->GetHandler(),
             mComputeAtlasProgram->GetHandler(),
-            mColorFragmentProgram->GetHandler()
+            mColorFragmentProgram->GetHandler(),
+            mMeshFragmentProgram->GetHandler(),
         };
 
         for (uint32_t lHandler : lProgramHandlers)
@@ -380,10 +382,12 @@ void CRenderer::UpdateSceneData(CScene const& aScene)
     TViewData lViewData;
     lViewData.mProjectionMatrix = aScene.mCamera.GetProjectionMatrix();
     lViewData.mViewMatrix = aScene.mCamera.GetViewMatrix();
+    glfwGetFramebufferSize(glfwGetCurrentContext(), &mViewWidth, &mViewHeight);
+    lViewData.mResolution = glm::vec4(mViewWidth, mViewHeight, 0.0, 0.0);
     mViewBuffer->UpdateSubData(0, (void*)&lViewData, sizeof(TViewData));
 
-    glm::mat4 lProjection = aScene.mCamera.GetProjectionMatrix(); //glm::perspective(aScene.mCamera.mFOV, aScene.mCamera.mAspect, 0.1f, 100.0f);
-    glm::mat4 lView = aScene.mCamera.GetViewMatrix(); //glm::lookAt(aScene.mCamera.mOrigin, aScene.mCamera.mLookAt, aScene.mCamera.mViewUp);
+    //glm::mat4 lProjection = aScene.mCamera.GetProjectionMatrix(); //glm::perspective(aScene.mCamera.mFOV, aScene.mCamera.mAspect, 0.1f, 100.0f);
+    //glm::mat4 lView = aScene.mCamera.GetViewMatrix(); //glm::lookAt(aScene.mCamera.mOrigin, aScene.mCamera.mLookAt, aScene.mCamera.mViewUp);
     //lProjection[1][1] *= -1; // Remember to do this in Vulkan
     //glm::mat4 lViewProjection = lProjection * lView;
     //glm::mat4 lInverseViewProjection = glm::inverse(lViewProjection);
@@ -393,6 +397,7 @@ void CRenderer::UpdateSceneData(CScene const& aScene)
     //glProgramUniformMatrix4fv(mFullscreenVertexProgram->GetHandler(), EUniformLoc::uViewMatrix, 1, false, glm::value_ptr(lView));
     //glProgramUniformMatrix4fv(mFullscreenVertexProgram->GetHandler(), EUniformLoc::uProjectionMatrix, 1, false, glm::value_ptr(lProjection));
     glProgramUniform4i(mColorFragmentProgram->GetHandler(), EUniformLoc::uVoxelPreview, aScene.mUseVoxels ? 1 : 0, aScene.mPreviewSlice, 0, 0);
+    glProgramUniform4i(mMeshFragmentProgram->GetHandler(), EUniformLoc::uVoxelPreview, aScene.mUseVoxels ? 1 : 0, aScene.mPreviewSlice, 0, 0);
 
 #if DEBUG
     ETexFilter::Type lLutFilters = (aScene.mLutNearestFilter) ? ETexFilter::NEAREST : ETexFilter::LINEAR;
@@ -404,8 +409,6 @@ void CRenderer::UpdateSceneData(CScene const& aScene)
 
 void CRenderer::RenderFrame()
 {
-    glfwGetFramebufferSize(glfwGetCurrentContext(), &mViewWidth, &mViewHeight);
-
     glViewport(0, 0, mViewWidth, mViewHeight);
     //glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
     glClearColor(0.237f, 0.237f, 0.267f, 1.00f);
@@ -419,20 +422,20 @@ void CRenderer::RenderFrame()
     // Draw full screen quad
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDepthMask(GL_FALSE);
-    glBindVertexArray(mDummyVAO);
-    mScreenQuadPipeline->Bind();
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindVertexArray(0);
-    glDepthMask(GL_TRUE);
+    //glBlendFunc(GL_ONE, GL_ONE);
+    {
+        //glDepthMask(GL_FALSE);
+        //glBindVertexArray(mDummyVAO);
+        //mScreenQuadPipeline->Bind();
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glBindVertexArray(0);
+        //glDepthMask(GL_TRUE);
 
-    // Draw mesh
-    glEnable(GL_DEPTH_TEST);
-    
-    //glFrontFace(GL_CCW);
-    mDrawMeshPipeline->Bind();
-    mBoxGeometry->Draw(1);
-    //glFrontFace(GL_CW);
-    glDisable(GL_DEPTH_TEST);
+        // Draw mesh
+        glEnable(GL_DEPTH_TEST);
+        mDrawMeshPipeline->Bind();
+        mBoxGeometry->Draw(1);
+        glDisable(GL_DEPTH_TEST);
+    }
     glDisable(GL_BLEND);
 }

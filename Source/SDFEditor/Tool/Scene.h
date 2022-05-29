@@ -18,6 +18,7 @@ struct TViewData
 {
     glm::mat4 mViewMatrix;
     glm::mat4 mProjectionMatrix;
+    glm::vec4 mResolution;
 };
 
 class CScene

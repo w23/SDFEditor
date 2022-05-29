@@ -10,11 +10,6 @@ layout(location = 0) out vec4 outColor;
 layout(location = 10) uniform sampler2D uRoughnessMap;
 layout(location = 11) uniform sampler2D uDitheringMap;
 
-layout(std140, binding = 3) uniform view
-{
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
 
 layout(std140, binding = 4) uniform global_material
 {
@@ -421,7 +416,7 @@ void main()
     
     vec4 finalColor = (uVoxelPreview.x == 1) ? RaymarchAtlas(camRay) : RaymarchStrokes(camRay);
 
-    //finalColor = dir * 0.5 + 0.5;
+    //finalColor = vec4(dir * 0.5 + 0.5, 0.5);
    // vec3 finalColor = abs(dir);
 
 
