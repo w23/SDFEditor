@@ -9,9 +9,12 @@ out gl_PerVertex
 
 // Full screen triangle vertices
 vec2 positions[3] = vec2[](
-    vec2(3.0, -1.0),
+    //vec2(3.0, -1.0),
+    //vec2(-1.0, -1.0),
+    //vec2(-1.0, 3.0)
+    vec2(-1.0, 3.0),
     vec2(-1.0, -1.0),
-    vec2(-1.0, 3.0)
+    vec2(3.0, -1.0)
 );
 
 /*vec2 uvs[3] = vec2[](
@@ -21,28 +24,31 @@ vec2 positions[3] = vec2[](
     );*/
 
 vec2 uvs[3] = vec2[](
-    vec2(2.0, 0.0),
+    vec2(0.0, 2.0), 
     vec2(0.0, 0.0),
-    vec2(0.0, 2.0)
+    vec2(2.0, 0.0)
     );
 
 layout(location = 0) out vec2 outFragUV;
 layout(location = 1) out vec4 outNear;
 layout(location = 2) out vec4 outFar;
 
-layout(location = 0) uniform mat4 uViewMatrix;
-layout(location = 1) uniform mat4 uProjectionMatrix;
+layout(std140, binding = 3) uniform view
+{
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
+};
 
 void main()
 {
     vec2 clipPos = positions[gl_VertexID].xy;
-    float near = 0.1f;
-    float far = 100.0f;
+    //float near = 0.1f;
+    //float far = 100.0f;
     
     gl_Position = vec4(clipPos, 0.0, 1.0);
     outFragUV = uvs[gl_VertexID].xy;
 
-    mat4 viewProj = uProjectionMatrix * uViewMatrix;
+    mat4 viewProj = projectionMatrix * viewMatrix;
     mat4 invViewProj = inverse(viewProj);    
 
     outNear = invViewProj * vec4(clipPos, 0, 1);

@@ -1,22 +1,18 @@
 // Copyright (c) 2022 David Gallardo and SDFEditor Project
 // main raymarching, lots of optimizations to be done here
 
-layout(location = 0) in vec2 inFragUV;
 layout(location = 1) in vec4 inNear;
 layout(location = 2) in vec4 inFar;
 
 layout(location = 0) out vec4 outColor;
 
+layout(location = 0) uniform mat4 uViewMatrix;
+layout(location = 1) uniform mat4 uProjectionMatrix;
+layout(location = 2) uniform mat4 uModelMatrix;
 layout(location = 10) uniform sampler2D uRoughnessMap;
 layout(location = 11) uniform sampler2D uDitheringMap;
 
-layout(std140, binding = 3) uniform view
-{
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
-
-layout(std140, binding = 4) uniform global_material
+layout(std140, binding = 3) uniform global_material
 {
     vec4 surfaceColor;
     vec4 fresnelColor;
@@ -263,7 +259,7 @@ vec4 RaymarchAtlas(in ray_t camRay)
     //float limit = sqrt(pow(uVoxelSide.x * 0.5, 2.0) * 2.0f);
     float limit = uVoxelSide.x * 1.0;
     float limitSubVoxel = 0.02;
-    vec4 color = vec4(0.0);
+    vec4 color = vec4(0.0f);//backgroundColor.rgb;
 
     // See lights as background
     //color = ApplyLight(camRay.pos + camRay.dir * 1000.0f, camRay.dir, -camRay.dir, vec3(backgroundColor.rgb), -lightDir, lightAColor.rgb, 1.0, 1.0);
@@ -409,7 +405,7 @@ vec4 RaymarchAtlas(in ray_t camRay)
 }
 
 void main()
-{   
+{    
     vec3 origin = inNear.xyz / inNear.w;  //ray's origin
     vec3 far3 = inFar.xyz / inFar.w;
     vec3 dir = far3 - origin;
@@ -419,40 +415,15 @@ void main()
     camRay.pos = origin;
     camRay.dir = dir;
     
-    vec4 finalColor = (uVoxelPreview.x == 1) ? RaymarchAtlas(camRay) : RaymarchStrokes(camRay);
+    //vec4 finalColor = (uVoxelPreview.x == 1) ? RaymarchAtlas(camRay) : RaymarchStrokes(camRay);
 
-    //finalColor = dir * 0.5 + 0.5;
-   // vec3 finalColor = abs(dir);
+    vec4 finalColor = vec4(dir * 0.5 + 0.5, 0.2);
 
-
-
-    finalColor.rgb = LinearToSRGB(finalColor.rgb);
+    //finalColor = LinearToSRGB(finalColor.rgb);
     
-    //{
-    //    // Vignette
-    //    vec2 uv2 = inFragUV * (vec2(1.0) - inFragUV.yx);   //vec2(1.0)- uv.yx; -> 1.-u.yx; Thanks FabriceNeyret !
-    //    float vig = uv2.x * uv2.y * 13.0; // multiply with sth for intensity
-    //    vig = pow(vig, 0.35); // change pow for modifying the extend of the  vignette
-    //    vig = mix(0.35, 1.0, vig);
-    //    vig = smoothstep(0.0, 0.75, vig);
-    //    finalColor *= vig;
-    //}
-
-
     // Fix color banding with dithering: https://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/
-    finalColor.rgb += texture2D(uDitheringMap, gl_FragCoord.xy / 8.0).r / 32.0 - (1.0 / 128.0);
+    //finalColor += texture2D(uDitheringMap, gl_FragCoord.xy / 8.0).r / 32.0 - (1.0 / 128.0);
 
-    outColor = finalColor;
-
-    //outColor.rgb = abs(strokes[0].posb.xyz);
-    //if (uVoxelPreview.x == 1)
-    //{
-    //    vec4 sdf = texelFetch(uSdfLutTexture, ivec3(inFragUV.x * 1.0 * (16.0f / 9.0f) * uVolumeExtent.x, float(uVoxelPreview.y), inFragUV.y * 1.0 * uVolumeExtent.x), 0).rgba;
-    //    //vec4 sdfTop = texture(uSdfLutTexture, vec3(inFragUV.x * 2.0 * (16.0f / 9.0f), inFragUV.y * 2.0 - 1.0, float(uVoxelPreview.y) / 128.0f)).rgba;
-    //    //sdf = mix(sdfTop, sdf, step(sdf.a, 1.0f / 128.0f));
-    //    sdf.a = (sdf.a * 2.0) - 1.0;
-    //    sdf.a = abs(sdf.a * uVolumeExtent.x * uVoxelSide.x);
-    //    float debugLimit = sqrt(pow(uVoxelSide.x * 0.5, 2.0) * 2.0f) * 2.5f;
-    //    outColor.rgb = mix(finalColor, sdf.rgb, sdf.a < debugLimit ? 1.0f : 0.0f);
-    //}
+   outColor = finalColor;
+   //outColor = vec4(vec3(1.0, 0.0, 0.0), 1.0f);
 }

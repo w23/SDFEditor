@@ -14,7 +14,11 @@
 
 #include <SDFEditor/Tool/Camera.h>
 
-
+struct TViewData
+{
+    glm::mat4 mViewMatrix;
+    glm::mat4 mProjectionMatrix;
+};
 
 class CScene
 {

@@ -26,7 +26,7 @@ CGPUBufferObject::~CGPUBufferObject()
     glDeleteBuffers(1, &mBufferHandler);
 }
 
-void CGPUBufferObject::SetData(size_t aSize, void* aData, uint32_t aFlags)
+void CGPUBufferObject::SetData(void* aData, size_t aSize, uint32_t aFlags)
 {
     uint32_t lFlags = 0;
     lFlags |= (aFlags & EGPUBufferFlags::DYNAMIC_STORAGE) ? GL_DYNAMIC_STORAGE_BIT : 0;
@@ -36,7 +36,7 @@ void CGPUBufferObject::SetData(size_t aSize, void* aData, uint32_t aFlags)
     mStorageSize = aSize;
 }
 
-void CGPUBufferObject::UpdateSubData(intptr_t aOffset, size_t aSize, void* aData)
+void CGPUBufferObject::UpdateSubData(intptr_t aOffset, void* aData, size_t aSize)
 {
     glNamedBufferSubData(mBufferHandler, aOffset, aSize, aData);
 }

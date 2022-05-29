@@ -6,6 +6,7 @@
 #include "SDFEditor/GPU/GPUShader.h"
 #include "SDFEditor/GPU/GPUStorageBuffer.h"
 #include "SDFEditor/GPU/GPUTexture.h"
+#include "SDFEditor/GPU/GPUGeometry.h"
 
 #include <glm/glm.hpp>
 
@@ -26,25 +27,33 @@ private:
     int32_t mViewWidth;
     int32_t mViewHeight;
 
-    // Render data
-    uint32_t mDummyVAO;
-    CGPUShaderProgramRef mFullscreenVertexProgram;
-    CGPUShaderProgramRef mColorFragmentProgram;
-    CGPUShaderPipelineRef mScreenQuadPipeline;
-
+    // Compute Voxel SDFs
     CGPUShaderProgramRef mComputeLutProgram;
     CGPUShaderPipelineRef mComputeLutPipeline;
     CGPUShaderProgramRef mComputeAtlasProgram;
     CGPUShaderPipelineRef mComputeAtlasPipeline;
     CGPUTextureRef mSdfLut;
     CGPUTextureRef mSdfAtlas;
-
     CGPUBufferObjectRef mStrokesBuffer;
     CGPUBufferObjectRef mSlotListBuffer;
     CGPUBufferObjectRef mSlotCounterBuffer;
 
+    // Render full screen quad
+    uint32_t mDummyVAO;
+    CGPUShaderProgramRef mFullscreenVertexProgram;
+    CGPUShaderProgramRef mColorFragmentProgram;
+    CGPUShaderPipelineRef mScreenQuadPipeline;
+    CGPUBufferObjectRef mViewBuffer;
     CGPUBufferObjectRef mMaterialBuffer;
-
     CGPUTextureRef mRoughnessMap;
     CGPUTextureRef mDitheringMap;
+
+    // Render box
+    CGPUGeometryRef mBoxGeometry;
+    CGPUShaderProgramRef mMeshVertexProgram;
+    CGPUShaderProgramRef mMeshFragmentProgram;
+    CGPUShaderPipelineRef mDrawMeshPipeline;
+    
+
+   
 };

@@ -37,8 +37,8 @@ public:
     CGPUBufferObject(EGPUBufferBindTarget::Type aTarget);
     ~CGPUBufferObject();
 
-    void SetData(size_t aSize, void* aData, uint32_t aFlags = EGPUBufferFlags::ALL);
-    void UpdateSubData(intptr_t aOffset, size_t aSize, void* aData);
+    void SetData(void* aData, size_t aSize, uint32_t aFlags = EGPUBufferFlags::ALL);
+    void UpdateSubData(intptr_t aOffset, void* aData, size_t aSize);
 
     void* Map();
     void Unmap();
