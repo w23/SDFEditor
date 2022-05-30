@@ -21,9 +21,12 @@ out gl_PerVertex
 };
 
 layout(location = 0) in vec3 inPosition;
+layout(location = 1) in vec3 inNormal;
 
 layout(location = 1) out vec4 outNear;
 layout(location = 2) out vec4 outFar;
+layout(location = 3) out vec3 outWorldPos;
+layout(location = 4) out vec3 outNormal;
 
 //layout(location = 0) out mat4 outViewMatrix;
 //layout(location = 1) out mat4 outProjectionMatrix;
@@ -47,8 +50,10 @@ void main()
     mat4 viewProj = view_projectionMatrix * view_viewMatrix;
     mat4 invViewProj = inverse(viewProj);
     //
- 
+    
     gl_Position = viewProj * vec4(inPosition * 3.2, 1.0);
+    outWorldPos = inPosition * 3.2; // TODO model matrix
+    outNormal = normalize(inNormal); //normalize(inPosition.xyz);
 
     outNear = invViewProj * vec4(gl_Position.xy, 0, 1);
     ////nearPos /= nearPos.w;

@@ -56,6 +56,7 @@ public:
     // Debug
     int32_t mPreviewSlice{ 64 };
     bool    mUseVoxels{ true };
+    bool    mUseBoxRender{ true };
     bool    mLutNearestFilter{ false };
     bool    mAtlasNearestFilter{ false };
 private:

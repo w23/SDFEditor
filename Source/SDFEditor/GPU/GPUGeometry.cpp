@@ -28,7 +28,9 @@ void CGPUGeometry::SetData(void* aVertexData, size_t aVertexDataSize, void* aInd
     // vertex positions
     // TODO: make configurable
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Position));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, Normal));
 
     glBindVertexArray(0);
 }

@@ -10,6 +10,7 @@ using CGPUGeometryRef = std::shared_ptr<class CGPUGeometry>;
 struct SVertex
 {
     glm::vec3 Position;
+    glm::vec3 Normal;
 };
 
 class CGPUGeometry

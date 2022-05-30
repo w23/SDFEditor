@@ -189,21 +189,21 @@ void CRenderer::Init()
         mDitheringMap->UpdateData(lBayerDitheringPattern);
 
     }
-
+    /*
     // Box Geometry
     std::vector<SVertex> lVertices =
     {
-        {glm::vec3(-1.0f, -1.0f, -1.0f)},
-        {glm::vec3(-1.0f, +1.0f, -1.0f)},
-        {glm::vec3(+1.0f, +1.0f, -1.0f)},
-        {glm::vec3(+1.0f, -1.0f, -1.0f)},
-        {glm::vec3(-1.0f, -1.0f, +1.0f)},
-        {glm::vec3(-1.0f, +1.0f, +1.0f)},
-        {glm::vec3(+1.0f, +1.0f, +1.0f)},
-        {glm::vec3(+1.0f, -1.0f, +1.0f)}
+        {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(-1.0f, +1.0f, -1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, +1.0f, -1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, -1.0f, -1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(-1.0f, -1.0f, +1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(-1.0f, +1.0f, +1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, +1.0f, +1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, -1.0f, +1.0f), glm::vec3(1.0, 0.0, 0.0)}
     };
 
-    std::vector <std::uint16_t> lIndices = 
+    std::vector <std::uint16_t> lIndices =
     {
         // front face
         0, 1, 2,
@@ -223,6 +223,79 @@ void CRenderer::Init()
         // bottom face
         4, 0, 3,
         4, 3, 7
+    };*/
+
+    std::vector <SVertex> lVertices =
+    {
+        // front face
+        {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0, -1.0, 0.0)},
+        {glm::vec3(-1.0f, -1.0f, +1.0f), glm::vec3(0.0, -1.0, 0.0)},
+        {glm::vec3(+1.0f, -1.0f, +1.0f), glm::vec3(0.0, -1.0, 0.0)},
+        {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0, -1.0, 0.0)},
+        {glm::vec3(+1.0f, -1.0f, +1.0f), glm::vec3(0.0, -1.0, 0.0)},
+        {glm::vec3(+1.0f, -1.0f, -1.0f), glm::vec3(0.0, -1.0, 0.0)},
+
+        // back face
+        {glm::vec3(-1.0f, +1.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0)},
+        {glm::vec3(+1.0f, +1.0f, +1.0f), glm::vec3(0.0, 1.0, 0.0)},
+        {glm::vec3(-1.0f, +1.0f, +1.0f), glm::vec3(0.0, 1.0, 0.0)},
+        {glm::vec3(-1.0f, +1.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0)},
+        {glm::vec3(+1.0f, +1.0f, -1.0f), glm::vec3(0.0, 1.0, 0.0)},
+        {glm::vec3(+1.0f, +1.0f, +1.0f), glm::vec3(0.0, 1.0, 0.0)},
+
+        // left face
+        {glm::vec3(-1.0f, +1.0f, -1.0f), glm::vec3(-1.0, 0.0, 0.0)},
+        {glm::vec3(-1.0f, +1.0f, +1.0f), glm::vec3(-1.0, 0.0, 0.0)},
+        {glm::vec3(-1.0f, -1.0f, +1.0f), glm::vec3(-1.0, 0.0, 0.0)},
+        {glm::vec3(-1.0f, +1.0f, -1.0f), glm::vec3(-1.0, 0.0, 0.0)},
+        {glm::vec3(-1.0f, -1.0f, +1.0f), glm::vec3(-1.0, 0.0, 0.0)},
+        {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(-1.0, 0.0, 0.0)},
+
+        // right face
+        {glm::vec3(+1.0f, -1.0f, -1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, -1.0f, +1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, +1.0f, +1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, -1.0f, -1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, +1.0f, +1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        {glm::vec3(+1.0f, +1.0f, -1.0f), glm::vec3(1.0, 0.0, 0.0)},
+        
+        // top face
+        {glm::vec3(-1.0f, -1.0f, +1.0f), glm::vec3(0.0, 0.0, 1.0)},
+        {glm::vec3(-1.0f, +1.0f, +1.0f), glm::vec3(0.0, 0.0, 1.0)},
+        {glm::vec3(+1.0f, +1.0f, +1.0f), glm::vec3(0.0, 0.0, 1.0)},
+        {glm::vec3(-1.0f, -1.0f, +1.0f), glm::vec3(0.0, 0.0, 1.0)},
+        {glm::vec3(+1.0f, +1.0f, +1.0f), glm::vec3(0.0, 0.0, 1.0)},
+        {glm::vec3(+1.0f, -1.0f, +1.0f), glm::vec3(0.0, 0.0, 1.0)},
+        
+        // bottom face
+        {glm::vec3(-1.0f, +1.0f, -1.0f), glm::vec3(0.0, 0.0, -1.0)},
+        {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0, 0.0, -1.0)},
+        {glm::vec3(+1.0f, -1.0f, -1.0f), glm::vec3(0.0, 0.0, -1.0)},
+        {glm::vec3(-1.0f, +1.0f, -1.0f), glm::vec3(0.0, 0.0, -1.0)},
+        {glm::vec3(+1.0f, -1.0f, -1.0f), glm::vec3(0.0, 0.0, -1.0)},
+        {glm::vec3(+1.0f, +1.0f, -1.0f), glm::vec3(0.0, 0.0, -1.0)}
+    };
+
+    std::vector <std::uint16_t> lIndices =
+    {
+        // front face
+        0, 1, 2,
+        3, 4, 5,
+        // back face
+        6, 7, 8,
+        9, 10, 11,
+        // left face
+        12, 13, 14,
+        15, 16, 17,
+        // right face
+        18, 19, 20,
+        21, 22, 23,
+        // top face
+        24, 25, 26,
+        27, 28, 29,
+        // bottom face
+        30, 31, 32,
+        33, 34, 35
     };
 
     mBoxGeometry = std::make_shared<CGPUGeometry>();
@@ -405,6 +478,8 @@ void CRenderer::UpdateSceneData(CScene const& aScene)
     ETexFilter::Type lAtlasFilters = (aScene.mAtlasNearestFilter) ? ETexFilter::NEAREST : ETexFilter::LINEAR;
     mSdfAtlas->SetFilters(lAtlasFilters, lAtlasFilters);
 #endif
+
+    mUseBoxRender = aScene.mUseBoxRender;
 }
 
 void CRenderer::RenderFrame()
@@ -424,18 +499,23 @@ void CRenderer::RenderFrame()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glBlendFunc(GL_ONE, GL_ONE);
     {
-        //glDepthMask(GL_FALSE);
-        //glBindVertexArray(mDummyVAO);
-        //mScreenQuadPipeline->Bind();
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
-        //glBindVertexArray(0);
-        //glDepthMask(GL_TRUE);
-
-        // Draw mesh
-        glEnable(GL_DEPTH_TEST);
-        mDrawMeshPipeline->Bind();
-        mBoxGeometry->Draw(1);
-        glDisable(GL_DEPTH_TEST);
+        if (!mUseBoxRender)
+        {
+            glDepthMask(GL_FALSE);
+            glBindVertexArray(mDummyVAO);
+            mScreenQuadPipeline->Bind();
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glBindVertexArray(0);
+            glDepthMask(GL_TRUE);
+        }
+        else
+        {
+            // Draw mesh
+            glEnable(GL_DEPTH_TEST);
+            mDrawMeshPipeline->Bind();
+            mBoxGeometry->Draw(1);
+            glDisable(GL_DEPTH_TEST);
+        }
     }
     glDisable(GL_BLEND);
 }

@@ -54,6 +54,6 @@ private:
     CGPUShaderProgramRef mMeshFragmentProgram;
     CGPUShaderPipelineRef mDrawMeshPipeline;
     
-
+    bool mUseBoxRender{ true };
    
 };

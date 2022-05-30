@@ -65,6 +65,7 @@ void CToolApp::Update()
     ImGui::Begin("Debug");
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::Checkbox("Use Voxels", &mScene.mUseVoxels);
+    ImGui::Checkbox("Use Box Render", &mScene.mUseBoxRender);
     ImGui::Checkbox("LUT Nearest Filter", &mScene.mLutNearestFilter);
     ImGui::Checkbox("Atlas Nearest Filter", &mScene.mAtlasNearestFilter);
     ImGui::DragInt("Preview Slice", &mScene.mPreviewSlice, 1, 0, 127);

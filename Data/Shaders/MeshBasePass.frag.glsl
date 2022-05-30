@@ -3,6 +3,8 @@
 
 layout(location = 1) in vec4 inNear;
 layout(location = 2) in vec4 inFar;
+layout(location = 3) in vec3 inWorldPos;
+layout(location = 4) in vec3 inNormal;
 
 layout(location = 0) out vec4 outColor;
 
@@ -260,6 +262,7 @@ vec4 RaymarchAtlas(in ray_t camRay)
     bool intersectsBox = rayboxintersect(camRay.pos, camRay.dir, vec3(uVoxelSide.x * uVolumeExtent.x * -0.5), vec3(uVoxelSide.x * uVolumeExtent.x * 0.5), testNormal, testDistance);
     float minZeroDist = clamp(testDistance.x, 0.0, abs(testDistance.x));
     vec3 enterPoint = camRay.pos + camRay.dir * minZeroDist;
+    //vec3 enterPoint = camRay.pos;
     bool reenter = false;
     if (intersectsBox)
     {
@@ -408,6 +411,26 @@ void main()
     vec3 dir = far3 - origin;
     dir = normalize(dir);        //ray's direction
 
+    //outColor = vec4(normalize(inNormal * 0.5 + 0.5), 1.0);
+    //return;
+
+    //vec4 cameraVec = inverse(view_viewMatrix) * vec4(0.0, 0.0, 1.0, 1.0);
+    //cameraVec /= cameraVec.w;
+    //cameraVec = normalize(cameraVec);
+    //outColor = dot(dir.xyz, normalize(inNormal.xyz)) > 0.0 ? vec4(1.0, 0.0, 0.0, 1.0) : vec4(0.0, 0.0, 1.0, 1.0);
+
+    // if we are inside the cube (Normal dot Camera > 0.0) que keep the camera near plane as origin, 
+    // if we are outside, we use the cube surface world position as origin
+    origin = (dot(dir.xyz, normalize(inNormal.xyz)) > 0.0) ? origin : inWorldPos;
+    
+    //outColor = vec4((dot(dir.xyz, normalize(inNormal.xyz)) > 0.0) ? origin : vec3(1.0) - origin, 1.0);
+    //outColor = vec4(origin, 1.0);
+   //return;
+    //outColor.rgb = vec3(dot(dir.xyz, normalize(inNormal.xyz)));
+    //return;
+
+    // TOOD: transform dir based on box transformation matrix
+
     ray_t camRay;
     camRay.pos = origin;
     camRay.dir = dir;
@@ -419,6 +442,7 @@ void main()
 
     finalColor.rgb = LinearToSRGB(finalColor.rgb);
 
+    // DEBUG CUBE COLOR
     finalColor.rgba += vec4(0.0, 0.1, 0.0, 0.1) * (1.0 - finalColor.a);
 
    
