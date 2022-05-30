@@ -12,18 +12,7 @@ layout(location = 0) out vec4 outColor;
 layout(location = 10) uniform sampler2D uRoughnessMap;
 layout(location = 11) uniform sampler2D uDitheringMap;
 
-layout(std140, binding = 4) uniform global_material
-{
-    vec4 surfaceColor;
-    vec4 fresnelColor;
-    vec4 aoColor;
-    vec4 backgroundColor;
 
-    vec4 lightAColor;
-    vec4 lightBColor;
-
-    vec4 pbr; // roughness.x, metalness.y
-};
 
 struct ray_t
 {

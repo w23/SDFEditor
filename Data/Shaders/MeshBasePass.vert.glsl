@@ -1,4 +1,5 @@
-
+// Copyright (c) 2022 David Gallardo and SDFEditor Project
+// 
 //struct primitive_data_t
 //{
 //    mat4 transform;
@@ -10,7 +11,7 @@
 //};
 
 
-// Copyright (c) 2022 David Gallardo and SDFEditor Project
+
 
 out gl_PerVertex
 {
