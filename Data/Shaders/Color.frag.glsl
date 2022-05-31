@@ -406,7 +406,10 @@ void main()
     //finalColor = vec4(dir * 0.5 + 0.5, 0.5);
    // vec3 finalColor = abs(dir);
 
-
+    if (finalColor.a < 0.001)
+    {
+        discard;
+    }
 
     finalColor.rgb = LinearToSRGB(finalColor.rgb);
     

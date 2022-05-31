@@ -208,12 +208,12 @@ vec4 ApplyMaterial(vec3 pos, vec3 rayDir, vec3 normal, float ao)
     color += ApplyLight(pos, rayDir, normal, surfaceColor.rgb, lightDir2, lightBColor.rgb, roughness, pbr.y);
     color = mix(color, fresnelColor.rgb, dotCam);
     color = mix(aoColor.rgb, color, ao);
-    color += fresnelColor.rgb * (1.0 - ao) * 0.5;
+    //color += fresnelColor.rgb * (1.0 - ao) * 0.5;
 
     return vec4(color, 1.0);
 }
 
-vec4 RaymarchStrokes(in ray_t camRay)
+vec4 RaymarchStrokes(inout ray_t camRay)
 {
     float totalDist = 0.0;
     float finalDist = distToScene(camRay.pos);
@@ -241,7 +241,7 @@ vec4 RaymarchStrokes(in ray_t camRay)
 
 vec2 opMinV2(in vec2 a, in vec2 b) { return (abs(a.x) < abs(b.x)) ? a : b; }
 
-vec4 RaymarchAtlas(in ray_t camRay)
+vec4 RaymarchAtlas(inout ray_t camRay)
 {
     float totalDist = 0.0;
     float finalDist = 1000000.0f;
@@ -440,10 +440,24 @@ void main()
 
     //vec4 finalColor = vec4(dir * 0.5 + 0.5, 0.2);
 
+    // is not a surface
+    if (finalColor.a < 0.001)
+    {
+        discard;
+        //vec4 pos4 = viewProj * vec4(inWorldPos, 1.0);
+        //gl_FragDepth = (pos4.z / pos4.w) * 0.5 + 0.5;
+    }
+    
+    // rewrite depth
+    {
+        vec4 pos4 = viewProj * vec4(camRay.pos, 1.0);
+        gl_FragDepth = (pos4.z / pos4.w) * 0.5 + 0.5;
+    }
+
     finalColor.rgb = LinearToSRGB(finalColor.rgb);
 
     // DEBUG CUBE COLOR
-    finalColor.rgba += vec4(0.0, 0.1, 0.0, 0.1) * (1.0 - finalColor.a);
+    //finalColor.rgba += vec4(0.0, 0.1, 0.0, 0.1) * (1.0 - finalColor.a);
 
    
     

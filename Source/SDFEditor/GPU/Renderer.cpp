@@ -67,7 +67,7 @@ void CRenderer::Init()
 
     // OpenGL setup
     glDisable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    //glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
     int workGroupSizes[3] = { 0 };
@@ -495,9 +495,10 @@ void CRenderer::RenderFrame()
     mDitheringMap->BindTexture(ETexBinding::uDitheringMap);
     
     // Draw full screen quad
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc(GL_ONE, GL_ONE);
+    //glEnable(GL_BLEND);
+    glDisable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE);
     {
         if (!mUseBoxRender)
         {
@@ -511,11 +512,13 @@ void CRenderer::RenderFrame()
         else
         {
             // Draw mesh
+            glDepthMask(GL_TRUE);
             glEnable(GL_DEPTH_TEST);
             mDrawMeshPipeline->Bind();
             mBoxGeometry->Draw(1);
             glDisable(GL_DEPTH_TEST);
+            //glDepthMask(GL_FALSE);
         }
     }
-    glDisable(GL_BLEND);
+    //glDisable(GL_BLEND);
 }
