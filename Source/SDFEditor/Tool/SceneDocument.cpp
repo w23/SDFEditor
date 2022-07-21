@@ -53,7 +53,7 @@ namespace
         return sOpNames[aOperation & EStrokeOp::OpsMaskMode];
     }
 
-    int32_t GetOperationCodeByName(std::string& aOperationName)
+    int32_t GetOperationCodeByName(const std::string& aOperationName)
     {
         const auto& lOpPair = sOpMap.find(aOperationName);
         if (lOpPair != sOpMap.end())
@@ -69,7 +69,7 @@ namespace
         return sPrimitiveNames[aPrimitive];
     }
 
-    int32_t GetPrimitiveCodeByName(std::string& aPrimitiveName)
+    int32_t GetPrimitiveCodeByName(const std::string& aPrimitiveName)
     {
         const auto& lPrimitivePair = sPrimitiveMap.find(aPrimitiveName);
         if (lPrimitivePair != sPrimitiveMap.end())

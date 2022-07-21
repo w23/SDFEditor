@@ -87,7 +87,7 @@ namespace GUI
             ImGui::DragInt(" Visible list Items", &gGUIState.mVisibleItemsInList, 1, 5, 20);
             ImGui::PopItemWidth();
             ImGui::SameLine();
-            ImGui::Text("(%d total)", aScene.mStrokesArray.size() & 0xFFFFFFFF);
+            ImGui::Text("(%d total)", (int)aScene.mStrokesArray.size());
             gGUIState.mVisibleItemsInList = glm::clamp(gGUIState.mVisibleItemsInList, 5, 20);
         }
             

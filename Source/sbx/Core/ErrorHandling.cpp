@@ -8,7 +8,7 @@
 
 namespace __sbx_assert
 {
-    bool EvalAssert(bool const & aTest, char* aTestStr, char* aFile, int32_t aLine, char* aFormat, ...)
+    bool EvalAssert(bool const & aTest, const char* aTestStr, const char* aFile, int32_t aLine, const char* aFormat, ...)
     {
         if(!aTest)
         { 

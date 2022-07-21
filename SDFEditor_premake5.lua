@@ -74,7 +74,7 @@ project "sbx"
 project "SDFEditor"
     location "./Build"
     kind "ConsoleApp"
-    links { "glfw3", "sbx" }
+    links { "glfw", "sbx" }
     targetname "SDFEditor"
     debugdir "./Data"
     

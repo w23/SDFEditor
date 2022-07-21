@@ -26,7 +26,7 @@ CGPUShaderProgram::CGPUShaderProgram(CShaderCodeRefList const & aCode, EShaderSo
     , mType(aType)
     , mName(aName)
 {
-    std::vector <char*> lCodeStrings;
+    std::vector <const char*> lCodeStrings;
     lCodeStrings.push_back("#version 450\nprecision mediump float;\n");
     for (auto& lStr : aCode)
     {

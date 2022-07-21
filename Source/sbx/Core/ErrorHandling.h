@@ -37,7 +37,7 @@ namespace __sbx_assert
         return sAssertBuff;
     }
 
-    bool EvalAssert(bool const & aTest, char* aTestStr, char* aFile, int32_t aLine, char* aFormat = "", ...);
+    bool EvalAssert(bool const & aTest, const char* aTestStr, const char* aFile, int32_t aLine, const char* aFormat = "", ...);
 };
 
 #   define SBX_ERROR(...) { SBX_LOG(__VA_ARGS__); SBX_DEBUG_BREAK(); }

@@ -30,7 +30,7 @@ namespace GUI
 
         if (ImGui::BeginPopupModal(aName, NULL, lNewDocFlags))
         {
-            ImGui::Text(aText);
+            ImGui::Text("%s", aText);
             if (ImGui::Button("No"))
             {
                 if (aCallback)

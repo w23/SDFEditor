@@ -25,8 +25,8 @@ void _sbx_write_log_va_list(const char* aFormat, va_list aArgsList)
     static std::mutex sUniqueRegistryMutex; 
     std::lock_guard< std::mutex > lScopedMutex(sUniqueRegistryMutex);
     static char lMessageBuffer[49152];
-    vsprintf_s(lMessageBuffer, sizeof(lMessageBuffer), aFormat, aArgsList);
-    strcat_s(lMessageBuffer, sizeof(lMessageBuffer), "\n");
+    const int n = vsnprintf(lMessageBuffer, sizeof(lMessageBuffer) - 1, aFormat, aArgsList);
+    lMessageBuffer[n] = '\n';
 
 #if SBX_OS_WINDOWS
     OutputDebugString(lMessageBuffer);

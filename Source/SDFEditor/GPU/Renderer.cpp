@@ -177,7 +177,7 @@ void CRenderer::ReloadShaders()
     SBX_LOG("Loading shaders...");
 
     // Shared SDF code
-    CShaderCodeRef lSdfCommonCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/SdfCommon.h.glsl")));
+    CShaderCodeRef lSdfCommonCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/SDFCommon.h.glsl")));
     
     // Compute lut shader program
     {
@@ -188,7 +188,7 @@ void CRenderer::ReloadShaders()
 
     // Compute atlas shader program
     {
-        CShaderCodeRef lComputeAtlasCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/ComputeSdfAtlas.comp.glsl")));
+        CShaderCodeRef lComputeAtlasCode = std::make_shared<std::vector<char>>(std::move(ReadFile("./Shaders/ComputeSDFAtlas.comp.glsl")));
         mComputeAtlasProgram = std::make_shared<CGPUShaderProgram>(CShaderCodeRefList{ lSdfCommonCode, lComputeAtlasCode }, EShaderSourceType::COMPUTE_SHADER, "ComputeAtlas");
         mComputeAtlasPipeline = std::make_shared<CGPUShaderPipeline>(std::vector<CGPUShaderProgramRef>{ mComputeAtlasProgram });
     }

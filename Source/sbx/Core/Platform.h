@@ -36,7 +36,7 @@
 #   define SBX_OS_LINUX        1
 #   ifdef __i386
 #       define SBX_ARCH_I386   1
-#   elif defined(LINUX64)
+#   elif defined(__x86_64__)
 #       define SBX_ARCH_X86_64 1
 #   endif
 
